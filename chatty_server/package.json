@@ -1,0 +1,16 @@
+{
+  "name": "chatty_server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "exact": "^0.2.0",
+    "express": "^4.14.0",
+    "ws": "1.1.1"
+  }
+}
