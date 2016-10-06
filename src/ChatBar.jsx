@@ -4,7 +4,7 @@ class ChatBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
+      username: props.username || '',
       content: ''
     };
 
@@ -35,7 +35,7 @@ class ChatBar extends Component {
             id="username"
             type="text"
             placeholder="Your Name (Optional)"
-            value={this.state.value}
+            value={this.state.username}
             onChange={this.handleUsernameChange}
             onKeyUp={this.handleSubmit}
             />
@@ -44,7 +44,7 @@ class ChatBar extends Component {
             id="new-message"
             type="text"
             placeholder="Type a message and hit ENTER"
-            value={this.state.value}
+            value={this.state.content}
             onChange={this.handleChange}
             onKeyUp={this.handleSubmit}
            />

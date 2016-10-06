@@ -22,14 +22,22 @@ const wss = new SocketServer({ server });
 // Set up a callback that will run when a client connects to the server
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
+
+wss.broadcast = function broadcast(message) {
+  wss.clients.forEach(function each(client) {
+    client.send(message);
+  });
+};
+
 wss.on('connection', (ws) => {
   console.log('Client connected');
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
+    console.log('incoming message', message)
+    wss.broadcast(message);
+
+    // wss.broadcast(message);
+
   });
-  ws.send('something');
-
-
   ws.on('close', () => console.log('Client disconnected'));
 });
