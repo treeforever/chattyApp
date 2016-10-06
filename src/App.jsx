@@ -10,6 +10,7 @@ class App extends Component {
       messages: []
     };
     this.sendMessage = this.sendMessage.bind(this)
+    this.sendNotification = this.sendNotification.bind(this)
   }
 
   initSocket(cb) {
@@ -69,6 +70,10 @@ class App extends Component {
     this.socket.send(JSON.stringify(message))
   }
 
+  sendNotification(notification) {
+    this.socket.send(JSON.stringify(notification))
+  }
+
   render() {
     return(
       <div className="wrapper">
@@ -78,7 +83,8 @@ class App extends Component {
         <MessageList messagesForClass={this.state.messages}/>
         <ChatBar
           username={ this.state.currentUser.name }
-          onSend={ this.sendMessage } />
+          onSend={ this.sendMessage }
+          onSendNotification={ this.sendNotification }/>
       </div>
     )
   }
