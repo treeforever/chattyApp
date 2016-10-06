@@ -7,6 +7,7 @@ class ChatBar extends Component {
       username: props.username || '',
       content: '',
       type: 'message',
+      oldName: props.username || ''
     };
 
     this.handleContentChange = this.handleContentChange.bind(this);
@@ -15,26 +16,38 @@ class ChatBar extends Component {
     this.handleNameSubmit = this.handleNameSubmit.bind(this);
   }
 
+  handleNameDiff = (event) => {
+    this.state.odlName = this.state.username;
+  }
+
+  test = (event) => {
+    console.log (this.state);
+  }
+
   handleNameChange(event) {
-    this.setState({username: event.target.value});
+    this.setState({
+      username: event.target.value
+    });
   }
 
   handleNameSubmit(event) {
     //send notification when user changes name;
     if (event.keyCode === 13) {
-      //prohibit empty username;
-      if (this.state.username.length === 0 &&
-          this.state.content.length !== 0
-        ) {
-        return;
-      }
-
-      if (this.state.username.length !== 0) {
+      console.log("oldname is ", this.state.odlName, "this.state.name is ", this.state.username);
+      if (this.state.username !== this.state.odlName ) {
         this.setState({
-          type: 'notification',
-          content: `${this.state.username} just changed username`})
+          oldName: this.state.username
+        });
 
-        this.props.onSendNotification(this.state)
+        let newState = {
+          type: 'notification',
+          command: `${this.state.oldName} just changed username to ${this.state.username}`
+        };
+        this.setState(newState)
+        console.log(this.state)
+        console.log("oldname is ", this.state.odlName, "this.state.name is ", this.state.username);
+        this.props.onSendNotification(newState)
+
       }
     }
   }
@@ -51,13 +64,15 @@ class ChatBar extends Component {
         ){
         return;
       }
+      let newState = this.state;
+      newState['type'] = "message";
       //send the msg to websocket server & reset input value;
-      this.setState({type: 'message'})
-      this.props.onSend(this.state)
+      this.setState(newState)
+
+      this.props.onSend(newState)
       this.setState({content: ''})
     }
   }
-
 
   render() {
     return (
@@ -69,6 +84,7 @@ class ChatBar extends Component {
             value={this.state.username}
             onChange={this.handleNameChange}
             onKeyUp={this.handleNameSubmit}
+            onBlur={this.test}
             />
 
           <input

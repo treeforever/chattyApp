@@ -5,32 +5,38 @@ class MessageList extends Component {
   render() {
     return (
       <div id="message-list">
-        {this.props.messagesForClass.map((message, index) => {
-            return (<Message username={message.username} key={index}>
-              {message.content}
-            </Message>)
-        })}
-        <div className="notification">
-          {this.props.notifications.map( (noti, index) => {
-            return (<Notification notification={noti.content} key={index} />)
-          })}
-        </div>
-      </div>
-    );
+        {this.props.data.map((post, index) => {
+          if (post.type === "message") {
+            return (
+              <Message username={post.username} key={index}>
+                {post.content}
+              </Message>
+            )
+          }
+          else if (post.type === "notification") {
+            return (
+              <Notification notification={post.command} key={index} />
+            )
+          }
+          else {
+            console.log("unrecognized post type");
+          }
+        })
+      }
+      </div>);
   }
 }
 
 class Notification extends Component {
   render() {
     return (
-      <article>
+      <article className="notification">
         <span className="notification-system">
           System
         </span>
         <span className="notification-content">
           {this.props.notification}
         </span>
-
       </article>
     )
   }

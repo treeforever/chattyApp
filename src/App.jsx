@@ -7,10 +7,14 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      messages: [],
-      notifications: [
-        {content: "User A just changed name to User B"},
-        {content: "User D just sent flowers to User C"}
+      data: [
+        { username: "user A",
+          command: "User A just changed name to User B",
+          type: "notification"},
+        { username: "user D",
+          command: "User D just sent flowers to User C",
+          type: "notification"}
+
       ]
     };
     this.sendMessage = this.sendMessage.bind(this)
@@ -27,8 +31,9 @@ class App extends Component {
     this.socket.onopen = (event) => {
       this.socket.send(
         JSON.stringify({
-          username: 'host',
-          content: `User ${this.state.currentUser.name} just joined`
+          username: 'system',
+          command: `${this.state.currentUser.name} just joined the room`,
+          type: 'notification'
         })
       )
     }
@@ -37,14 +42,16 @@ class App extends Component {
   listenBroadcast() {
     this.socket.onmessage = (event) => {
       let newMessage = JSON.parse(event.data)
+      console.log("from listenBroadcast-event.data is ", event.data)
       if (newMessage.type === "notification") {
         this.setState({
-          username: 'host',
+          data: this.state.data.concat([newMessage])
+        })
+      } else {
+        this.setState({
+          data: this.state.data.concat([newMessage])
         })
       }
-      this.setState({
-        messages: this.state.messages.concat([newMessage])
-      })
     }
   }
 
@@ -73,14 +80,13 @@ class App extends Component {
 
   sendMessage(message) {
     message.id = this.uuidGenerator();
-    // this.setState({
-    //   messages: this.state.messages.concat([message])
-    // })
     this.socket.send(JSON.stringify(message))
+    console.log("from message channel")
   }
 
   sendNotification(notification) {
     this.socket.send(JSON.stringify(notification))
+    console.log("from notification channel", notification)
   }
 
   render() {
@@ -90,8 +96,7 @@ class App extends Component {
             <h1>Chatty</h1>
         </nav>
         <MessageList
-          messagesForClass={ this.state.messages }
-          notifications={this.state.notifications}/>
+          data={ this.state.data }/>
         <ChatBar
           username={ this.state.currentUser.name }
           onSend={ this.sendMessage }
