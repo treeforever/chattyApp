@@ -1,2 +1,21 @@
 // This is the top-level scss file. Import all other files in here.
 @import 'home';
+div.notification {
+
+
+  article {
+    font: Serif;
+    font-style: italic;
+    color: blue;
+    font-weight: 400;
+    padding: 4px 0;
+
+    .notification-system {
+      flex: 15; margin-right:100px; overflow: hidden; font-weight: 700;
+    }
+
+    .notification-content {
+      flex: 85;
+    }
+  }
+}

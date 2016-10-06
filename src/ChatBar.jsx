@@ -31,8 +31,8 @@ class ChatBar extends Component {
 
       if (this.state.username.length !== 0) {
         this.setState({
-          type: "notification"
-          content: "${}"})
+          type: 'notification',
+          content: `${this.state.username} just changed username`})
 
         this.props.onSendNotification(this.state)
       }

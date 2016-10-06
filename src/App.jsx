@@ -7,7 +7,11 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      messages: []
+      messages: [],
+      notifications: [
+        {content: "User A just changed name to User B"},
+        {content: "User D just sent flowers to User C"}
+      ]
     };
     this.sendMessage = this.sendMessage.bind(this)
     this.sendNotification = this.sendNotification.bind(this)
@@ -33,6 +37,11 @@ class App extends Component {
   listenBroadcast() {
     this.socket.onmessage = (event) => {
       let newMessage = JSON.parse(event.data)
+      if (newMessage.type === "notification") {
+        this.setState({
+          username: 'host',
+        })
+      }
       this.setState({
         messages: this.state.messages.concat([newMessage])
       })
@@ -80,7 +89,9 @@ class App extends Component {
         <nav>
             <h1>Chatty</h1>
         </nav>
-        <MessageList messagesForClass={this.state.messages}/>
+        <MessageList
+          messagesForClass={ this.state.messages }
+          notifications={this.state.notifications}/>
         <ChatBar
           username={ this.state.currentUser.name }
           onSend={ this.sendMessage }
