@@ -7,27 +7,15 @@ class App extends Component {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      data: [
-        { username: "user A",
-          command: "User A just changed name to User B",
-          type: "notification"},
-        { username: "user D",
-          command: "User D just sent flowers to User C",
-          type: "notification"}
-
-      ]
+      data: []
     };
-    this.sendMessage = this.sendMessage.bind(this)
-    this.sendNotification = this.sendNotification.bind(this)
   }
 
-  initSocket(cb) {
+  initSocket = () => {
     this.socket = new WebSocket("ws://localhost:4000", 'JSON');
   }
 
-
-
-  sendJoinMsg() {
+  sendJoinMsg = () => {
     this.socket.onopen = (event) => {
       this.socket.send(
         JSON.stringify({
@@ -39,10 +27,10 @@ class App extends Component {
     }
   }
 
-  listenBroadcast() {
+  listenBroadcast = () => {
     this.socket.onmessage = (event) => {
       let newMessage = JSON.parse(event.data)
-      console.log("from listenBroadcast-event.data is ", event.data)
+      console.log("listen is", event.data)
       if (newMessage.type === "notification") {
         this.setState({
           data: this.state.data.concat([newMessage])
@@ -55,7 +43,7 @@ class App extends Component {
     }
   }
 
-  componentDidMount() {
+  componentDidMount = () => {
     //set websocket connection
     this.initSocket()
     this.sendJoinMsg()
@@ -78,15 +66,47 @@ class App extends Component {
     return uuid;
   }
 
-  sendMessage(message) {
-    message.id = this.uuidGenerator();
-    this.socket.send(JSON.stringify(message))
-    console.log("from message channel")
+  contentSubmit = (event) => {
+    if (event.keyCode === 13) {
+      // prohibit empty content;
+      // if (event.target.value === 0)
+      //
+      //     // this.state.data.username.length === 0
+      //   {
+      //   return;
+      // }
+
+      let newFeed = {
+        id: this.uuidGenerator(),
+        username: this.state.currentUser.name,
+        content: event.target.value,
+        type: "message"
+      }
+      this.socket.send(JSON.stringify(newFeed))
+      event.target.value = ''
+    }
   }
 
-  sendNotification(notification) {
-    this.socket.send(JSON.stringify(notification))
-    console.log("from notification channel", notification)
+  newNameSubmit = (event) => {
+    if (event.keyCode === 13) {
+      // prohibit empty content;
+      // if (event.target.value === 0)
+      //
+      //     // this.state.data.username.length === 0
+      //   {
+      //   return;
+      // }
+
+      let oldName = this.state.currentUser.name
+      let newName= event.target.value
+
+      let newFeed = {
+        command: `${oldName} just changed name to ${newName}`,
+        type: "notification"
+      }
+      this.socket.send(JSON.stringify(newFeed))
+      this.state.currentUser.name = event.target.value
+    }
   }
 
   render() {
@@ -99,13 +119,15 @@ class App extends Component {
           data={ this.state.data }/>
         <ChatBar
           username={ this.state.currentUser.name }
+          content={ this.state.data.content }
           onSend={ this.sendMessage }
-          onSendNotification={ this.sendNotification }/>
+          contentSubmit={ this.contentSubmit }
+          newNameSubmit={ this.newNameSubmit }
+          onSendNotification={ this.sendNotification }
+        />
       </div>
     )
   }
 }
-
-
 
 export default App;
