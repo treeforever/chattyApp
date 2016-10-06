@@ -87,26 +87,27 @@ class App extends Component {
     }
   }
 
-  newNameSubmit = (event) => {
+  onBlur = (event) => {
+    this.newNameSubmit(event);
+  }
+
+  onNameEnter = (event) => {
     if (event.keyCode === 13) {
-      // prohibit empty content;
-      // if (event.target.value === 0)
-      //
-      //     // this.state.data.username.length === 0
-      //   {
-      //   return;
-      // }
-
-      let oldName = this.state.currentUser.name
-      let newName= event.target.value
-
-      let newFeed = {
-        command: `${oldName} just changed name to ${newName}`,
-        type: "notification"
-      }
-      this.socket.send(JSON.stringify(newFeed))
-      this.state.currentUser.name = event.target.value
+      this.newNameSubmit(event);
     }
+  }
+
+
+  newNameSubmit = (event) => {
+    let oldName = this.state.currentUser.name
+    let newName= event.target.value
+
+    let newFeed = {
+      command: `${oldName} just changed name to ${newName}`,
+      type: "notification"
+    }
+    this.socket.send(JSON.stringify(newFeed))
+    this.state.currentUser.name = event.target.value
   }
 
   render() {
@@ -120,10 +121,9 @@ class App extends Component {
         <ChatBar
           username={ this.state.currentUser.name }
           content={ this.state.data.content }
-          onSend={ this.sendMessage }
           contentSubmit={ this.contentSubmit }
-          newNameSubmit={ this.newNameSubmit }
-          onSendNotification={ this.sendNotification }
+          onNameEnter={ this.onNameEnter }
+          onBlur={ this.onBlur }
         />
       </div>
     )

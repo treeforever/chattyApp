@@ -12,7 +12,8 @@ class ChatBar extends Component {
             id="username"
             type="text"
             placeholder="Your Name (Optional)"
-            onKeyUp={this.props.newNameSubmit}
+            onKeyUp={this.props.onNameEnter}
+            onBlur={this.props.onBlur}
             />
 
           <input
