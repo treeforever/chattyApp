@@ -22,3 +22,22 @@
       flex: 85;
     }
   }
+
+  div.image {
+    margin-left: 100px;
+    margin-bottom: 30px;
+    width: 60%;
+    border: solid black 2px;
+
+
+  img {
+    max-height: 100%;
+    max-width: 100%;
+  }
+
+  }
+
+#image-content {
+  margin-left: 70px;
+  dispay: block;
+}

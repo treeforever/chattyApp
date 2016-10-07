@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
 import UserCount from './UserCount.jsx';
-// import Image from './Image.jsx';
+
 
 let setUserIdLimit = 1;
 
@@ -50,9 +50,24 @@ class App extends Component {
         clientNum: newMessage.clientNum
       })
 
-      console.log(this.returnUrl(newMessage.content));
 
     }
+  }
+
+  componentDidMount = () => {
+    this.initSocket()
+    this.sendJoinMsg()
+    this.listenBroadcast()
+  }
+
+  uuidGenerator() {
+    var d = new Date().getTime();
+    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uuid;
   }
 
 
@@ -66,33 +81,10 @@ class App extends Component {
     }
   }
 
-
-
-
-
-  componentDidMount = () => {
-    //set websocket connection
-    this.initSocket()
-    this.sendJoinMsg()
-    this.listenBroadcast()
-  }
-
-  componentDidUnount() {
-    // disconnect the socket when unmount
-  }
-
-  uuidGenerator() {
-    var d = new Date().getTime();
-    var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = (d + Math.random()*16)%16 | 0;
-        d = Math.floor(d/16);
-        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
-    });
-    return uuid;
-  }
-
   contentSubmit = (event) => {
     if (event.keyCode === 13) {
+      let url = this.returnUrl(event.target.value);
+
       let newFeed = {
         id: this.uuidGenerator(),
         username: this.state.currentUser.name,
@@ -101,6 +93,13 @@ class App extends Component {
         content: event.target.value,
         type: "message"
       }
+
+      //overwrite the type to url if there is url in the message
+      if (url) {
+        newFeed.type = "url";
+        newFeed.url = url;
+      }
+
       this.socket.send(JSON.stringify(newFeed))
       event.target.value = ''
     }

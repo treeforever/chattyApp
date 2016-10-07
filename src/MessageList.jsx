@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Message from './Message.jsx'
+import Images from './Image.jsx';
 
 class MessageList extends Component {
   render() {
@@ -20,12 +21,12 @@ class MessageList extends Component {
             )
           }
 
-          else if (post.type === "image") {
+          else if (post.url) {
             return (
-              <Image url={post.url} key={index} />
+              <Images url={post.url} username={post.username} content={post.content} key={index} color={post.color} />
             )
           }
-              
+
           else {
             console.log("unrecognized post type");
           }

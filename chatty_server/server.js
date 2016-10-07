@@ -66,14 +66,8 @@ wss.on('connection', (ws) => {
     let newMsg = JSON.parse(message);
     newMsg.clientNum = clientNum;
 
-    if (newMsg.type === "message") {
-      console.log('incoming message ', newMsg)
-    } else if (newMsg.type === "notification") {
-      console.log('incoming notification ', newMsg)
-    } else {
-      console.log('undefined message type')
-    }
-
+    console.log('undefined message type', newMsg)
+  
     wss.broadcast(JSON.stringify(newMsg));
 
   });
