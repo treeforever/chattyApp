@@ -103,12 +103,14 @@ class App extends Component {
     let oldName = this.state.currentUser.name
     let newName= event.target.value
 
-    let newFeed = {
-      command: `${oldName} just changed name to ${newName}`,
-      type: "notification"
+    if (oldName !== newName) {
+      let newFeed = {
+        command: `${oldName} just changed name to ${newName}`,
+        type: "notification"
+      }
+      this.socket.send(JSON.stringify(newFeed))
+      this.state.currentUser.name = event.target.value
     }
-    this.socket.send(JSON.stringify(newFeed))
-    this.state.currentUser.name = event.target.value
   }
 
   render() {
