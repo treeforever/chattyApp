@@ -29,20 +29,33 @@ wss.broadcast = function broadcast(message) {
   });
 };
 
+let clientNum = 0;
+
 wss.on('connection', (ws) => {
-  console.log('Client connected');
+  clientNum += 1;
+  console.log('Client connected. Client number is ', clientNum);
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
-  ws.on('message', function incoming(data) {
-    if (JSON.parse(data).type === "message") {
-      console.log('incoming message ', data)
-    } else if (JSON.parse(data).type === "notification") {
-      console.log('incoming notification ', data)
+  ws.on('message', function incoming(message) {
+    let newMsg = JSON.parse(message);
+    newMsg.clientNum = clientNum;
+
+    if (newMsg.type === "message") {
+      console.log('incoming message ', newMsg)
+    } else if (newMsg.type === "notification") {
+      console.log('incoming notification ', newMsg)
     } else {
-      console.log('undefined data type')
+      console.log('undefined message type')
     }
 
-    wss.broadcast(data);
+    wss.broadcast(message);
 
   });
-  ws.on('close', () => console.log('Client disconnected'));
+  ws.on('close', () => {
+    clientNum -= 1;
+    console.log('Client disconnected. Client number now is ', clientNum)
+    wss.broadcast(JSON.stringify({
+      type: 'notification',
+      clientNum: `${clientNum}`
+    }))
+  });
 });

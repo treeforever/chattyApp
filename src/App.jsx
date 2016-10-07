@@ -21,7 +21,8 @@ class App extends Component {
         JSON.stringify({
           username: 'system',
           command: `${this.state.currentUser.name} just joined the room`,
-          type: 'notification'
+          type: 'notification',
+          clientNum: 0
         })
       )
     }
