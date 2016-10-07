@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
 import UserCount from './UserCount.jsx';
+// import Image from './Image.jsx';
 
 let setUserIdLimit = 1;
 
@@ -48,8 +49,24 @@ class App extends Component {
         data: this.state.data.concat([newMessage]),
         clientNum: newMessage.clientNum
       })
+
+      console.log(this.returnUrl(newMessage.content));
+
     }
   }
+
+
+  returnUrl = (data) => {
+    if (data) {
+      let matchUrl = data.match(/(https?|ftp):\/\/.*\.(?:jpg|png|gif|bmp)/)
+      if (matchUrl) {
+        let url = matchUrl[0]
+        return url;
+      }
+    }
+  }
+
+
 
 
 

@@ -13,11 +13,19 @@ class MessageList extends Component {
               </Message>
             )
           }
+
           else if (post.type === "notification") {
             return (
               <Notification notification={post.command} key={index} />
             )
           }
+
+          else if (post.type === "image") {
+            return (
+              <Image url={post.url} key={index} />
+            )
+          }
+              
           else {
             console.log("unrecognized post type");
           }

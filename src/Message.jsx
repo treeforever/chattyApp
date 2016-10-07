@@ -5,7 +5,7 @@ import React, {Component} from 'react';
 class Message extends React.Component {
   render(){
     let currentColor = this.props.color;
-    console.log("in message, color is", currentColor);
+    
     return (
       <div className="message">
         <span className="username" style={ {color: currentColor}}>
