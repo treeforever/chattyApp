@@ -29,11 +29,21 @@ wss.broadcast = function broadcast(message) {
   });
 };
 
+assignColor = () => {
+  let randomIndex = Math.floor(Math.random() * 4);
+  let colors = ["#f48c42", "#42f45f", "#d942f4", "#42f4e5"]
+
+  return colors[randomIndex];
+}
+
 let clientNum = 0;
 
 wss.on('connection', (ws) => {
   clientNum += 1;
-  console.log('Client connected. Client number is ', clientNum);
+  let userColor = assignColor();
+  ws.send(JSON.stringify({
+    userColor: `${userColor}`
+  }));
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('message', function incoming(message) {
     let newMsg = JSON.parse(message);
@@ -55,7 +65,8 @@ wss.on('connection', (ws) => {
     console.log('Client disconnected. Client number now is ', clientNum)
     wss.broadcast(JSON.stringify({
       type: 'notification',
-      clientNum: `${clientNum}`
+      clientNum: `${clientNum}`,
+      command: 'A user just left.'
     }))
   });
 });

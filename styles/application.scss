@@ -1,6 +1,10 @@
 // This is the top-level scss file. Import all other files in here.
 @import 'home';
 
+  nav p {
+    float: right;
+    margin-top: -1.5%;
+  }
 
 
   article.notification {
