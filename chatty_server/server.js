@@ -29,6 +29,16 @@ wss.broadcast = function broadcast(message) {
   });
 };
 
+uuidGenerator = () => {
+  var d = new Date().getTime();
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = (d + Math.random()*16)%16 | 0;
+      d = Math.floor(d/16);
+      return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+  });
+  return uuid;
+}
+
 assignColor = () => {
   let randomIndex = Math.floor(Math.random() * 4);
   let colors = ["#f48c42", "#42f45f", "#d942f4", "#42f4e5"]
@@ -36,10 +46,33 @@ assignColor = () => {
   return colors[randomIndex];
 }
 
+function createCookie(name,value,days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime()+(days*24*60*60*1000));
+        var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name+"="+value+expires+"; path=/";
+}
+
+function readCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
+}
+
 let clientNum = 0;
 
 wss.on('connection', (ws) => {
+  //to show the number of online users
   clientNum += 1;
+
   let userColor = assignColor();
   ws.send(JSON.stringify({
     userColor: `${userColor}`
