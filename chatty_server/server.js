@@ -47,7 +47,7 @@ wss.on('connection', (ws) => {
       console.log('undefined message type')
     }
 
-    wss.broadcast(message);
+    wss.broadcast(JSON.stringify(newMsg));
 
   });
   ws.on('close', () => {

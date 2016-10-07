@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
 import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
+import UserCount from './UserCount.jsx';
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       currentUser: {name: "Bob"},
-      data: []
+      data: [],
+      clientNum: 0
     };
   }
 
@@ -22,7 +24,6 @@ class App extends Component {
           username: 'system',
           command: `${this.state.currentUser.name} just joined the room`,
           type: 'notification',
-          clientNum: 0
         })
       )
     }
@@ -31,16 +32,10 @@ class App extends Component {
   listenBroadcast = () => {
     this.socket.onmessage = (event) => {
       let newMessage = JSON.parse(event.data)
-      console.log("listen is", event.data)
-      if (newMessage.type === "notification") {
-        this.setState({
-          data: this.state.data.concat([newMessage])
-        })
-      } else {
-        this.setState({
-          data: this.state.data.concat([newMessage])
-        })
-      }
+      this.setState({
+        data: this.state.data.concat([newMessage]),
+        clientNum: newMessage.clientNum
+      })
     }
   }
 
@@ -49,8 +44,6 @@ class App extends Component {
     this.initSocket()
     this.sendJoinMsg()
     this.listenBroadcast()
-
-
   }
 
   componentDidUnount() {
@@ -69,14 +62,6 @@ class App extends Component {
 
   contentSubmit = (event) => {
     if (event.keyCode === 13) {
-      // prohibit empty content;
-      // if (event.target.value === 0)
-      //
-      //     // this.state.data.username.length === 0
-      //   {
-      //   return;
-      // }
-
       let newFeed = {
         id: this.uuidGenerator(),
         username: this.state.currentUser.name,
@@ -118,6 +103,9 @@ class App extends Component {
       <div className="wrapper">
         <nav>
             <h1>Chatty</h1>
+            <UserCount
+              userCount={ this.state.clientNum }
+            />
         </nav>
         <MessageList
           data={ this.state.data }/>
