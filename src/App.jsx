@@ -3,14 +3,15 @@ import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
 import UserCount from './UserCount.jsx';
 
+let setUserIdLimit = 1;
+
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentUser: {name: "Bob"},
+      currentUser: { name: "Bob", id: undefined, color: undefined },
       data: [],
-      clientNum: 0,
-      userColor: 'black'
+      clientNum: 0
     };
   }
 
@@ -34,9 +35,12 @@ class App extends Component {
     this.socket.onmessage = (event) => {
       let newMessage = JSON.parse(event.data)
 
-      //listen to userid msg
-      if (newMessage.userColor){
-        this.setState({userColor: newMessage.userColor})
+      if (setUserIdLimit) {
+        this.setState({currentUser: { name: undefined,
+                                      id: newMessage.userid,
+                                      color: newMessage.color }})
+
+        setUserIdLimit -= 1;
         return;
       }
 
@@ -75,6 +79,8 @@ class App extends Component {
       let newFeed = {
         id: this.uuidGenerator(),
         username: this.state.currentUser.name,
+        userid: this.state.currentUser.id,
+        color: this.state.currentUser.color,
         content: event.target.value,
         type: "message"
       }
@@ -118,8 +124,7 @@ class App extends Component {
             />
         </nav>
         <MessageList
-          data={ this.state.data }
-          userColor={ this.state.userColor }/>
+          data={ this.state.data }/>
         <ChatBar
           username={ this.state.currentUser.name }
           content={ this.state.data.content }

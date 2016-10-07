@@ -8,14 +8,14 @@ class MessageList extends Component {
         {this.props.data.map((post, index) => {
           if (post.type === "message") {
             return (
-              <Message username={post.username} key={index} userColor={this.props.userColor}>
+              <Message username={post.username} key={index} color={post.color}>
                 {post.content}
               </Message>
             )
           }
           else if (post.type === "notification") {
             return (
-              <Notification notification={post.command} key={index} userColor={this.props.userColor}/>
+              <Notification notification={post.command} key={index} />
             )
           }
           else {

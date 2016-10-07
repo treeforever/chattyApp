@@ -46,37 +46,21 @@ assignColor = () => {
   return colors[randomIndex];
 }
 
-function createCookie(name,value,days) {
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
-    }
-    else var expires = "";
-    document.cookie = name+"="+value+expires+"; path=/";
-}
-
-function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
 let clientNum = 0;
+
+pairColorAndId = () => {
+  let pair = {};
+  pair.userid = uuidGenerator();
+  pair.color = assignColor();
+  return pair;
+}
 
 wss.on('connection', (ws) => {
   //to show the number of online users
   clientNum += 1;
+  let pair = pairColorAndId();
+  ws.send(JSON.stringify(pair));
 
-  let userColor = assignColor();
-  ws.send(JSON.stringify({
-    userColor: `${userColor}`
-  }));
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('message', function incoming(message) {
     let newMsg = JSON.parse(message);
