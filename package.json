@@ -44,6 +44,7 @@
   "dependencies": {
     "node-uuid": "1.4.7",
     "react": "15.2.1",
+    "react-burger-menu": "file:react-burger-menu",
     "react-dom": "15.2.1"
   }
 }

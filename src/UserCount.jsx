@@ -1,21 +1,25 @@
 import React, {Component} from 'react';
 
-class UserCount extends Component {
-  render() {
-    if(this.props.userCount < 2) {
-      return (
-        <header>
-          <p>{this.props.userCount} user online</p>
-        </header>
-      )
-    } else {
-      return (
-        <header>
-          <p>{this.props.userCount} users online</p>
-        </header>
-      )
-    }
+function Noun(count){
+  if (count > 1) {
+    return "users online";
+  } else {
+    return "user online"
   }
 }
+
+class UserCount extends Component {
+  render() {
+    return (
+      <div style={{ cursor: "pointer"}}>
+        <p onClick={this.props.onClick}>
+          {this.props.userCount} {Noun(this.props.userCount)}
+        </p>
+      </div>
+    )
+  }
+}
+
+
 
 export default UserCount;

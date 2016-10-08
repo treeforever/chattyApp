@@ -3,6 +3,8 @@ import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
 import UserCount from './UserCount.jsx';
 
+const Menu = require('react-burger-menu').stack;
+
 
 let setUserIdLimit = 1;
 
@@ -12,7 +14,9 @@ class App extends Component {
     this.state = {
       currentUser: { name: "Bob", id: undefined, color: undefined },
       data: [],
-      clientNum: 0
+      clientNum: 0,
+      menuIsOpen: false,
+      onlineUsers: []
     };
   }
 
@@ -130,6 +134,11 @@ class App extends Component {
     }
   }
 
+  toggleMenu = () => {
+    let menuState = this.state.menuIsOpen;
+    this.setState({menuIsOpen: !menuState})
+  }
+
   render() {
     return(
       <div className="wrapper">
@@ -137,7 +146,13 @@ class App extends Component {
             <h1>Chatty</h1>
             <UserCount
               userCount={ this.state.clientNum }
+              onClick={ this.toggleMenu }
             />
+          <Menu isOpen={this.state.menuIsOpen} customBurgerIcon={ false }>
+              <a className="menu-item">{this.state.username}</a>
+
+          </Menu>
+
         </nav>
         <MessageList
           data={ this.state.data }/>

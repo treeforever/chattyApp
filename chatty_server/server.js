@@ -23,6 +23,11 @@ const wss = new SocketServer({ server });
 // When a client connects they are assigned a socket, represented by
 // the ws parameter in the callback.
 
+//initial state
+let clientNum = 0;
+let onlineUsers = [];
+
+
 wss.broadcast = function broadcast(message) {
   wss.clients.forEach(function each(client) {
     client.send(message);
@@ -46,7 +51,7 @@ assignColor = () => {
   return colors[randomIndex];
 }
 
-let clientNum = 0;
+
 
 pairColorAndId = () => {
   let pair = {};
@@ -55,10 +60,39 @@ pairColorAndId = () => {
   return pair;
 }
 
+updateOnlineUsers = (userid) => {
+
+  onlineUsers.push({ userid: userid, username: "A user" });
+}
+
+updateUsernameOnServer = (msg) => {
+  if (msg.event === "namechange") {
+    onlineUsers.map( (user) => {
+      if (user.userid === msg.userid) {
+        user.username = msg.newName
+      }
+    })
+  }
+}
+
+confirmOnline = (msg) => {
+
+  if (msg.event === "confirm online") {
+    onlineUsers.push({
+      userid: msg.userid,
+      username: msg.useranme
+    })
+    console.log("someone left. now online users are: ", onlineUsers);
+  }
+
+}
+
 wss.on('connection', (ws) => {
   //to show the number of online users
   clientNum += 1;
+
   let pair = pairColorAndId();
+  updateOnlineUsers(pair.userid);
   ws.send(JSON.stringify(pair));
 
   // Set up a callback for when a client closes the socket. This usually means they closed their browser.
@@ -66,14 +100,25 @@ wss.on('connection', (ws) => {
     let newMsg = JSON.parse(message);
     newMsg.clientNum = clientNum;
 
-    console.log('undefined message type', newMsg)
-  
+    console.log('Incoming message', newMsg)
+
+    updateUsernameOnServer(newMsg);
+
     wss.broadcast(JSON.stringify(newMsg));
 
+    confirmOnline(newMsg);
+    console.log("Online users are:", onlineUsers)
   });
+
   ws.on('close', () => {
     clientNum -= 1;
+    onlineUsers = [];
+
     console.log('Client disconnected. Client number now is ', clientNum)
+
+    //check who are online
+    wss.broadcast(JSON.stringify({ 'event': "leave" }))
+
     wss.broadcast(JSON.stringify({
       type: 'notification',
       clientNum: `${clientNum}`,
