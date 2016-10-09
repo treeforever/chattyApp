@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import MessageList from './MessageList.jsx';
 import ChatBar from './ChatBar.jsx';
 import UserCount from './UserCount.jsx';
+import MenuItem from './MenuItem.jsx'
 
 const Menu = require('react-burger-menu').stack;
 
@@ -46,6 +47,12 @@ class App extends Component {
                                       color: newMessage.color }})
 
         setUserIdLimit -= 1;
+        return;
+      }
+
+      if (newMessage.onlineUsersUpdate) {
+        this.setState({ onlineUsers: newMessage.onlineUsersUpdate })
+        console.log(this.state.onlineUsers)
         return;
       }
 
@@ -127,7 +134,10 @@ class App extends Component {
     if (oldName !== newName) {
       let newFeed = {
         command: `${oldName} just changed name to ${newName}`,
-        type: "notification"
+        type: "notification",
+        'event': "namechange",
+        newName: newName,
+        userid: this.state.currentUser.id
       }
       this.socket.send(JSON.stringify(newFeed))
       this.state.currentUser.name = event.target.value
@@ -148,9 +158,8 @@ class App extends Component {
               userCount={ this.state.clientNum }
               onClick={ this.toggleMenu }
             />
-          <Menu isOpen={this.state.menuIsOpen} customBurgerIcon={ false }>
-              <a className="menu-item">{this.state.username}</a>
-
+          <Menu isOpen={ this.state.menuIsOpen } customBurgerIcon={ false }>
+            <MenuItem onlineUsers={ this.state.onlineUsers }/>
           </Menu>
 
         </nav>

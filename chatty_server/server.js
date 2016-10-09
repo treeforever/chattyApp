@@ -61,15 +61,17 @@ pairColorAndId = () => {
 }
 
 updateOnlineUsers = (userid) => {
-
   onlineUsers.push({ userid: userid, username: "A user" });
+  wss.broadcast(JSON.stringify({ onlineUsersUpdate: onlineUsers }));
 }
 
-updateUsernameOnServer = (msg) => {
+updateUsername = (msg) => {
   if (msg.event === "namechange") {
     onlineUsers.map( (user) => {
       if (user.userid === msg.userid) {
         user.username = msg.newName
+        wss.broadcast(JSON.stringify({ onlineUsersUpdate: onlineUsers }));
+        console.log('someone changed changed', onlineUsers)
       }
     })
   }
@@ -82,6 +84,7 @@ confirmOnline = (msg) => {
       userid: msg.userid,
       username: msg.useranme
     })
+    wss.broadcast(JSON.stringify({ onlineUsersUpdate: onlineUsers }));
     console.log("someone left. now online users are: ", onlineUsers);
   }
 
@@ -92,17 +95,16 @@ wss.on('connection', (ws) => {
   clientNum += 1;
 
   let pair = pairColorAndId();
-  updateOnlineUsers(pair.userid);
   ws.send(JSON.stringify(pair));
+  updateOnlineUsers(pair.userid);
 
-  // Set up a callback for when a client closes the socket. This usually means they closed their browser.
   ws.on('message', function incoming(message) {
     let newMsg = JSON.parse(message);
     newMsg.clientNum = clientNum;
 
     console.log('Incoming message', newMsg)
 
-    updateUsernameOnServer(newMsg);
+    updateUsername(newMsg);
 
     wss.broadcast(JSON.stringify(newMsg));
 
